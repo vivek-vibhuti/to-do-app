@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do App</title>
+    <link rel="stylesheet" href="/output.css">
+</head>
+<body class=" text-[#fff] h-screen flex flex-col items-center justify-center">
+    <div class="w-full max-w-md">
+        <form action="" class="flex items-center w-full space-x-2">
+            <input 
+                type="text" 
+                id="task-input"
+                placeholder="What do you want to do?" 
+                class="flex-grow p-2 text-black rounded-full"
+            >
+            <button 
+                id="btn" 
+                class="px-4 py-2 text-white transition duration-300 ease-in-out bg-blue-500 rounded-full hover:bg-blue-600"
+                type="submit"
+            >
+                Add
+            </button>
+        </form>
+
+        <!-- Task List -->
+        <ul id="task-list" class="mt-4 space-y-2 text-white"></ul>
+    </div>
+
+    <script>
+        document.querySelector('#btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Get the value from the input field
+            let task = document.querySelector('#task-input').value;
+
+            // If the input is empty, do nothing
+            if (!task) {
+                return;
+            }
+
+            // Get existing tasks from localStorage or create an empty array if there are no tasks
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+            // Add the new task to the array
+            tasks.push(task);
+
+            // Save the updated tasks array back to localStorage
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+
+            // Clear the input field
+            document.querySelector('#task-input').value = '';
+
+            // Update the task list display
+            displayTasks();
+        });
+
+        // Function to display tasks
+        function displayTasks() {
+            const taskList = document.querySelector('#task-list');
+            
+            // Clear the current list
+            taskList.innerHTML = '';
+
+            // Get tasks from localStorage
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            console.log("Tasks from localStorage:", tasks); // Debug: check the stored tasks
+
+            // Loop through the tasks and create list items
+            tasks.forEach((task, index) => {
+                let listItem = document.createElement('li');
+                listItem.className = "flex justify-between items-center bg-gray-800 p-2 rounded";
+                listItem.textContent = task;
+                
+                // Add a delete button for each task
+                let deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.className = 'bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600';
+                deleteBtn.addEventListener('click', () => {
+                    deleteTask(index);
+                });
+
+                listItem.appendChild(deleteBtn);
+                taskList.appendChild(listItem);
+            });
+        }
+
+        // Function to delete a task
+        function deleteTask(index) {
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.splice(index, 1); // Remove the task at the given index
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            displayTasks(); // Refresh the task list display
+        }
+
+        // Initial call to display tasks on page load
+        displayTasks();
+    </script>
+</body>
+</html>
